@@ -6,6 +6,7 @@
 }
 
 .searchBar {
+  width: 35%;
   margin-bottom: 20px;
   display: flex;
   justify-content: flex-start;
@@ -26,7 +27,7 @@ table {
   input {
     height: 30px;
     max-width: 90%;
-    padding: 10px;
+    padding: 0px 10px;
     width: -webkit-fill-available;
     // border: 1px solid #ccc;
     // border-radius: 5px;
@@ -39,7 +40,7 @@ table {
 
   th,
   td {
-    padding: 15px;
+    padding: 5px;
     background-color: rgba(255, 255, 255, 0.2);
     color: #fff;
   }
@@ -56,6 +57,8 @@ table {
     th {
       background-color: #ec7e18;
       white-space: nowrap;
+      text-align: center;
+      cursor: pointer;
     }
   }
 
