@@ -6,7 +6,7 @@ export const generateColumns = () => [
     id: 'avatar',
     ordinalNo: 5,
     title: 'Avatar',
-    type: 'string',
+    type: 'image',
     width: 50,
   },
   {
@@ -37,7 +37,6 @@ export const generateColumns = () => [
     type: 'string',
     width: 200,
   },
-
   {
     id: 'birthday',
     ordinalNo: 6,
@@ -56,13 +55,14 @@ export const generateColumns = () => [
     id: 'gender',
     ordinalNo: 8,
     title: 'Gender',
-    type: 'string',
+    type: 'selection',
+    options: ['female', 'male', 'other'], // Add options for selection type
     width: 80,
   },
   {
     id: 'status',
     ordinalNo: 9,
-    title: 'Status',
+    title: 'Is Active',
     type: 'boolean',
     width: 80,
   },
@@ -71,14 +71,15 @@ export const generateColumns = () => [
     ordinalNo: 10,
     title: 'Role',
     type: 'selection',
+    options: ['Admin', 'User', 'Guest'], // Add options for selection type
     width: 80,
   },
 ];
 
 export const generateData = (rowCount) => {
   return Array.from({ length: rowCount }, () => {
-    const gender = faker.person.sexType();
-    const firstName = faker.person.firstName(gender);
+    const genderType = faker.person.sexType();
+    const firstName = faker.person.firstName(genderType);
     const lastName = faker.person.lastName();
     const email = faker.internet.email({
       firstName,
@@ -93,7 +94,7 @@ export const generateData = (rowCount) => {
       avatar: faker.image.avatar(),
       birthday: new Date(faker.date.birthdate()).toDateString(),
       age: faker.number.int({ min: 18, max: 65 }),
-      gender,
+      gender: faker.helpers.arrayElement(['female', 'male', 'other']),
       subscriptionTier: faker.helpers.arrayElement([
         'free',
         'basic',

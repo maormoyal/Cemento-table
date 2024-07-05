@@ -5,6 +5,7 @@ import {
   useSortBy,
   useFilters,
   useGlobalFilter,
+  useExpanded,
   useRowSelect,
 } from 'react-table';
 import EditableCell from '../cell/EditableCell';
@@ -23,10 +24,11 @@ const Table = () => {
           <EditableCell
             value={cellProps.value}
             row={cellProps.row}
-            column={cellProps.column}
+            column={{ ...cellProps.column, options: col.options || [] }} // Pass options to EditableCell
             updateMyData={updateMyData}
           />
         ),
+        type: col.type, // Pass the type to the column definition
       })),
     []
   );
@@ -87,6 +89,7 @@ const Table = () => {
     useFilters,
     useGlobalFilter,
     useSortBy,
+    useExpanded,
     useRowSelect
   );
 
