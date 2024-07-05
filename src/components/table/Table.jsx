@@ -7,7 +7,8 @@ import {
   useGlobalFilter,
   useRowSelect,
 } from 'react-table';
-import Cell from '../cell/Cell';
+import EditableCell from '../cell/EditableCell';
+import ColumnToggleDropdown from '../columnToggleDropdown/ColumnToggleDropdown';
 import { generateColumns, generateData } from '../../utils/generateData';
 import styles from './Table.module.scss';
 
@@ -19,7 +20,7 @@ const Table = () => {
         accessor: col.id,
         width: col.width || 100,
         Cell: (cellProps) => (
-          <Cell
+          <EditableCell
             value={cellProps.value}
             row={cellProps.row}
             column={cellProps.column}
@@ -30,9 +31,10 @@ const Table = () => {
     []
   );
 
-  const initialData = useMemo(() => localStorage.getItem('tableData'), []);
-
-  const [data, setData] = useState(JSON.parse(initialData) || generateData(20));
+  const [data, setData] = useState(() => {
+    const savedData = localStorage.getItem('tableData');
+    return savedData ? JSON.parse(savedData) : generateData(20);
+  });
 
   const [columnVisibility, setColumnVisibility] = useState(
     columns.reduce((acc, column) => {
@@ -45,14 +47,6 @@ const Table = () => {
   useEffect(() => {
     localStorage.setItem('tableData', JSON.stringify(data));
   }, [data]);
-
-  // Load data from local storage on component mount
-  useEffect(() => {
-    const savedData = localStorage.getItem('tableData');
-    if (savedData) {
-      setData(JSON.parse(savedData));
-    }
-  }, []);
 
   const updateMyData = (rowIndex, columnId, value) => {
     setData((oldData) =>
@@ -77,13 +71,12 @@ const Table = () => {
     state,
     setGlobalFilter,
     allColumns,
-    getToggleHideAllColumnsProps,
     toggleHideColumn,
   } = useTable(
     {
       columns,
       data,
-      defaultColumn: { Cell },
+      defaultColumn: { EditableCell },
       updateMyData,
       initialState: {
         hiddenColumns: columns
@@ -108,28 +101,19 @@ const Table = () => {
 
   return (
     <>
-      <div className={styles.searchBar}>
-        <input
-          value={state.globalFilter || ''}
-          onChange={(e) => setGlobalFilter(e.target.value)}
-          placeholder='Search...'
+      <div className={styles.searchBarWrapper}>
+        <div className={styles.searchBar}>
+          <input
+            value={state.globalFilter || ''}
+            onChange={(e) => setGlobalFilter(e.target.value)}
+            placeholder='Search...'
+          />
+        </div>
+        <ColumnToggleDropdown
+          allColumns={allColumns}
+          columnVisibility={columnVisibility}
+          handleColumnVisibilityChange={handleColumnVisibilityChange}
         />
-      </div>
-      <div className={styles.columnToggle}>
-        <label>
-          <input type='checkbox' {...getToggleHideAllColumnsProps()} />
-          Toggle All
-        </label>
-        {allColumns.map((column) => (
-          <label key={column.id}>
-            <input
-              type='checkbox'
-              checked={columnVisibility[column.id]}
-              onChange={() => handleColumnVisibilityChange(column.id)}
-            />{' '}
-            {column.Header}
-          </label>
-        ))}
       </div>
       <div className={styles.tableWrapper}>
         <table {...getTableProps()}>

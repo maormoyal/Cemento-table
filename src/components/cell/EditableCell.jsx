@@ -1,7 +1,7 @@
 // src/components/EditableCell.js
 import { useState, useEffect } from 'react';
 
-const Cell = ({
+const EditableCell = ({
   value: initialValue,
   row: { index },
   column: { id },
@@ -34,4 +34,4 @@ const Cell = ({
   return <input value={value} onChange={onChange} onBlur={onBlur} />;
 };
 
-export default Cell;
+export default EditableCell;
