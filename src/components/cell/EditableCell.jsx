@@ -41,7 +41,7 @@ const EditableCell = ({
   }, [initialValue]);
 
   useEffect(() => {
-    if (type === 'boolean') onBlur();
+    if (type === 'boolean' || type === 'selection') onBlur();
   }, [value, onBlur, type]);
 
   switch (type) {
@@ -77,7 +77,6 @@ const EditableCell = ({
             value={value}
             onChange={onChange}
             onBlur={onBlur}
-            onFocus={() => setIsEdiMode(true)}
             onKeyDown={handleKeyDown}
           >
             {options.map((option) => (
@@ -86,11 +85,6 @@ const EditableCell = ({
               </option>
             ))}
           </select>
-          {IsEditMode && (
-            <span className={styles.saveBtn} onClick={onSave}>
-              ✓save
-            </span>
-          )}
         </>
       );
 
