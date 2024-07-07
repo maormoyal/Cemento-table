@@ -1,5 +1,5 @@
 // src/components/ColumnToggleDropdown.js
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import styles from './ColumnToggleDropdown.module.scss';
 
 const ColumnToggleDropdown = ({
@@ -18,18 +18,6 @@ const ColumnToggleDropdown = ({
     }
   };
 
-  const handleSelectAll = () => {
-    allColumns.forEach((column) => {
-      handleColumnVisibilityChange(column.id, true);
-    });
-  };
-
-  const handleDeselectAll = () => {
-    allColumns.forEach((column) => {
-      handleColumnVisibilityChange(column.id, false);
-    });
-  };
-
   useEffect(() => {
     if (isOpen) {
       window.addEventListener('click', handleClickOutside);
@@ -42,6 +30,16 @@ const ColumnToggleDropdown = ({
     };
   }, [isOpen]);
 
+  const isAllSelected = useMemo(() => {
+    return Object.values(columnVisibility).every((v) => v);
+  }, [columnVisibility]);
+
+  const handleToggleAll = () => {
+    allColumns.forEach((column) => {
+      handleColumnVisibilityChange(column.id, !isAllSelected);
+    });
+  };
+
   return (
     <div className={styles.dropdown} ref={dropdownRef}>
       <button onClick={toggleDropdown} className={styles.dropdownButton}>
@@ -49,15 +47,21 @@ const ColumnToggleDropdown = ({
       </button>
       {isOpen && (
         <div className={styles.dropdownContent}>
-          <button onClick={handleSelectAll}>Select All</button>
-          <button onClick={handleDeselectAll}>Deselect All</button>
+          <label className={styles.dropdownItem}>
+            <input
+              type='checkbox'
+              checked={isAllSelected}
+              onChange={handleToggleAll}
+            />
+            {isAllSelected ? 'Deselect All' : 'Select All'}
+          </label>
           {allColumns.map((column) => (
             <label key={column.id} className={styles.dropdownItem}>
               <input
                 type='checkbox'
                 checked={columnVisibility[column.id]}
                 onChange={() => handleColumnVisibilityChange(column.id)}
-              />{' '}
+              />
               {column.Header}
             </label>
           ))}
