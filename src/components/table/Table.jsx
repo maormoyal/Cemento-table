@@ -64,6 +64,17 @@ const Table = () => {
     );
   };
 
+  const handleColumnVisibilityChange = (
+    accessor,
+    newVisibility = !columnVisibility[accessor]
+  ) => {
+    setColumnVisibility((prev) => ({
+      ...prev,
+      [accessor]: newVisibility,
+    }));
+    toggleHideColumn(accessor, !newVisibility);
+  };
+
   const {
     getTableProps,
     getTableBodyProps,
@@ -92,15 +103,6 @@ const Table = () => {
     useExpanded,
     useRowSelect
   );
-
-  const handleColumnVisibilityChange = (accessor) => {
-    const newVisibility = !columnVisibility[accessor];
-    setColumnVisibility((prev) => ({
-      ...prev,
-      [accessor]: newVisibility,
-    }));
-    toggleHideColumn(accessor, !newVisibility);
-  };
 
   return (
     <>

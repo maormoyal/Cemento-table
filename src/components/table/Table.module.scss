@@ -6,7 +6,7 @@
 }
 
 .searchBar {
-  width: 35%;
+  width: 34%;
   margin-bottom: 20px;
   display: flex;
   justify-content: flex-start;
@@ -28,6 +28,11 @@ table {
     max-width: 90%;
     padding: 0px 10px;
     width: -webkit-fill-available;
+  }
+
+  input[type='checkbox' i] {
+    height: 20px;
+    width: 20px;
   }
 
   img {

@@ -1,10 +1,8 @@
 #root {
   max-width: 90%;
   min-width: 90%;
-  max-height: 90dvh;
   overflow: hidden;
   margin: 0 auto;
-  /* padding: 2rem; */
   text-align: center;
 }
 

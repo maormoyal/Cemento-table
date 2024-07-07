@@ -18,6 +18,18 @@ const ColumnToggleDropdown = ({
     }
   };
 
+  const handleSelectAll = () => {
+    allColumns.forEach((column) => {
+      handleColumnVisibilityChange(column.id, true);
+    });
+  };
+
+  const handleDeselectAll = () => {
+    allColumns.forEach((column) => {
+      handleColumnVisibilityChange(column.id, false);
+    });
+  };
+
   useEffect(() => {
     if (isOpen) {
       window.addEventListener('click', handleClickOutside);
@@ -37,6 +49,8 @@ const ColumnToggleDropdown = ({
       </button>
       {isOpen && (
         <div className={styles.dropdownContent}>
+          <button onClick={handleSelectAll}>Select All</button>
+          <button onClick={handleDeselectAll}>Deselect All</button>
           {allColumns.map((column) => (
             <label key={column.id} className={styles.dropdownItem}>
               <input

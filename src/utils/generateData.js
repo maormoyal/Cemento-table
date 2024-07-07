@@ -62,7 +62,7 @@ export const generateColumns = () => [
   {
     id: 'status',
     ordinalNo: 9,
-    title: 'Is Active',
+    title: 'Status',
     type: 'boolean',
     width: 80,
   },
@@ -71,7 +71,7 @@ export const generateColumns = () => [
     ordinalNo: 10,
     title: 'Role',
     type: 'selection',
-    options: ['Admin', 'User', 'Guest'], // Add options for selection type
+    options: ['Admin', 'User', 'Guest'],
     width: 80,
   },
 ];
@@ -95,11 +95,6 @@ export const generateData = (rowCount) => {
       birthday: new Date(faker.date.birthdate()).toDateString(),
       age: faker.number.int({ min: 18, max: 65 }),
       gender: faker.helpers.arrayElement(['female', 'male', 'other']),
-      subscriptionTier: faker.helpers.arrayElement([
-        'free',
-        'basic',
-        'business',
-      ]),
       status: faker.datatype.boolean(),
       role: faker.helpers.arrayElement(['Admin', 'User', 'Guest']),
     };
