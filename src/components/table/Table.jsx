@@ -24,11 +24,11 @@ const Table = () => {
           <EditableCell
             value={cellProps.value}
             row={cellProps.row}
-            column={{ ...cellProps.column, options: col.options || [] }} // Pass options to EditableCell
+            column={{ ...cellProps.column, options: col.options || [] }}
             updateMyData={updateMyData}
           />
         ),
-        type: col.type, // Pass the type to the column definition
+        type: col.type,
       })),
     []
   );
@@ -135,7 +135,7 @@ const Table = () => {
                       <th
                         key={columnKey}
                         {...restColumnProps}
-                        style={{ width: column.width }} // Apply width style here
+                        style={{ width: column.width }}
                       >
                         {column.render('Header')}
                         <span>
@@ -158,17 +158,53 @@ const Table = () => {
                 prepareRow(row);
                 const { key: rowKey, ...restRowProps } = row.getRowProps();
                 return (
-                  <tr key={rowKey} {...restRowProps}>
-                    {row.cells.map((cell) => {
-                      const { key: cellKey, ...restCellProps } =
-                        cell.getCellProps();
-                      return (
-                        <td key={cellKey} {...restCellProps}>
-                          {cell.render('Cell')}
+                  <>
+                    <tr key={rowKey} {...restRowProps}>
+                      {row.cells.map((cell) => {
+                        const { key: cellKey, ...restCellProps } =
+                          cell.getCellProps();
+                        return (
+                          <td key={cellKey} {...restCellProps}>
+                            {cell.render('Cell')}
+                          </td>
+                        );
+                      })}
+                    </tr>
+                    {row.isExpanded && row.subRows.length > 0 && (
+                      <tr>
+                        <td
+                          colSpan={columns.length}
+                          style={{ paddingLeft: '2rem' }}
+                        >
+                          <table>
+                            <tbody>
+                              {row.subRows.map((subRow) => {
+                                prepareRow(subRow);
+                                return (
+                                  <tr key={subRow.id} {...subRow.getRowProps()}>
+                                    {subRow.cells.map((cell) => {
+                                      const {
+                                        key: subCellKey,
+                                        ...restSubCellProps
+                                      } = cell.getCellProps();
+                                      return (
+                                        <td
+                                          key={subCellKey}
+                                          {...restSubCellProps}
+                                        >
+                                          {cell.render('Cell')}
+                                        </td>
+                                      );
+                                    })}
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
                         </td>
-                      );
-                    })}
-                  </tr>
+                      </tr>
+                    )}
+                  </>
                 );
               })
             ) : (

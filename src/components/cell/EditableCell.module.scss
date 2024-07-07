@@ -16,3 +16,12 @@
 .saveBtn:hover {
   background-color: #45a049; // Darker green on hover
 }
+
+.rowContent {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+  justify-content: start;
+  margin-bottom: 10px;
+  color: black;
+}

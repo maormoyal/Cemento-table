@@ -1,17 +1,17 @@
 // src/components/EditableCell.js
 import { useState, useEffect, useCallback, useRef } from 'react';
 import styles from './EditableCell.module.scss';
-import Modal from '../modal/Modal'; // Import the Modal component
+import Modal from '../modal/Modal';
 
 const EditableCell = ({
   value: initialValue,
-  row: { index },
+  row: { index, original },
   column: { id, type, options = [] },
   updateMyData,
 }) => {
   const [value, setValue] = useState(initialValue);
   const [IsEditMode, setIsEdiMode] = useState(false);
-  const [showModal, setShowModal] = useState(false); // State to control the modal
+  const [showModal, setShowModal] = useState(false);
   const inputRef = useRef(null);
 
   const onChange = (e) => {
@@ -57,7 +57,7 @@ const EditableCell = ({
               borderRadius: '50%',
               cursor: 'pointer',
             }}
-            onClick={() => setShowModal(true)} // Show modal on click
+            onClick={() => setShowModal(true)}
           />
           <Modal show={showModal} onClose={() => setShowModal(false)}>
             <img
@@ -65,6 +65,13 @@ const EditableCell = ({
               alt='avatar'
               style={{ width: '300px', height: '300px' }}
             />
+            <div className={styles.rowContent}>
+              {Object.keys(original).map((key) => (
+                <span key={key}>
+                  <strong>{key}:</strong> {original[key]}
+                </span>
+              ))}
+            </div>
           </Modal>
         </>
       );
