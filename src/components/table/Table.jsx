@@ -1,10 +1,5 @@
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-  useRef,
-} from 'react';
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react';
+import PropTypes from 'prop-types';
 import {
   useTable,
   useFilters,
@@ -301,6 +296,18 @@ const Table = () => {
       </div>
     </>
   );
+};
+
+Table.propTypes = {
+  row: PropTypes.shape({
+    id: PropTypes.string,
+    isExpanded: PropTypes.bool,
+    allCells: PropTypes.array,
+    getToggleRowExpandedProps: PropTypes.func,
+    canExpand: PropTypes.bool,
+    depth: PropTypes.number,
+    subRows: PropTypes.array,
+  }),
 };
 
 export default Table;
