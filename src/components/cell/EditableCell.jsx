@@ -1,5 +1,5 @@
 // src/components/EditableCell.js
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import styles from './EditableCell.module.scss';
 import Modal from '../modal/Modal';
 
@@ -12,6 +12,7 @@ const EditableCell = ({
   const [value, setValue] = useState(initialValue);
   const [IsEditMode, setIsEdiMode] = useState(false);
   const [showModal, setShowModal] = useState(false);
+
   const inputRef = useRef(null);
 
   const onChange = (e) => {
@@ -19,10 +20,9 @@ const EditableCell = ({
     setValue(newValue);
   };
 
-  const onBlur = useCallback(() => {
+  const onBlur = () => {
     updateMyData(index, id, value);
-    setIsEdiMode(false);
-  }, [updateMyData, index, id, value]);
+  };
 
   const onSave = () => {
     updateMyData(index, id, value);
@@ -39,10 +39,6 @@ const EditableCell = ({
   useEffect(() => {
     setValue(initialValue);
   }, [initialValue]);
-
-  useEffect(() => {
-    if (type === 'boolean' || type === 'selection') onBlur();
-  }, [value, onBlur, type]);
 
   switch (type) {
     case 'image':
@@ -81,7 +77,7 @@ const EditableCell = ({
         <>
           <select
             ref={inputRef}
-            value={value}
+            value={value || undefined}
             onChange={onChange}
             onBlur={onBlur}
             onKeyDown={handleKeyDown}
@@ -117,11 +113,11 @@ const EditableCell = ({
             onFocus={() => setIsEdiMode(true)}
             onKeyDown={handleKeyDown}
           />
-          {IsEditMode && (
+          {/* {IsEditMode && (
             <span className={styles.saveBtn} onClick={onSave}>
               ✓save
             </span>
-          )}
+          )} */}
         </>
       );
 
@@ -139,11 +135,11 @@ const EditableCell = ({
             onKeyDown={handleKeyDown}
             disabled={disabled}
           />
-          {IsEditMode && (
+          {/* {IsEditMode && (
             <span className={styles.saveBtn} onClick={onSave}>
               ✓save
             </span>
-          )}
+          )} */}
         </>
       );
     }
