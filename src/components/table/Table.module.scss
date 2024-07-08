@@ -63,21 +63,17 @@ table {
   }
 
   td.aggregatedCell {
-    background-color: #ffa50078;
+    background-color: #1e1e1e;
     text-align: left;
-
-    input,
-    select {
-      pointer-events: none;
-    }
   }
 
-  // td:not(.aggregatedCell) {
-  //   input,
-  //   img {
-  //     display: none;
-  //   }
-  // }
+  tr:has(.aggregatedCell):hover {
+    background-color: #302f2f;
+  }
+
+  td.aggregatedCell:hover {
+    background-color: #302f2f;
+  }
 
   th {
     text-align: left;
@@ -90,7 +86,6 @@ table {
     }
     th {
       background-color: #ec7e18;
-      // white-space: nowrap;
       text-align: center;
       cursor: pointer;
     }

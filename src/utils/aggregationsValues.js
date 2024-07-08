@@ -1,3 +1,4 @@
+// src/utils/aggregationsValues.js
 const aggregationsValues = (type, id) => {
   let aggregate = '';
   let Aggregated = () => {};
@@ -7,14 +8,14 @@ const aggregationsValues = (type, id) => {
     Aggregated = ({ cell: { value } }) => ` ${Math.floor(value)} (avg)`;
   }
 
-  if (id === 'lastName') {
+  if (id === 'lastName' || id === 'firstName') {
     aggregate = 'uniqueCount';
     Aggregated = ({ cell: { value } }) => `${value} (Unique-Names)`;
   }
 
   if (id === 'email') {
     aggregate = 'uniqueCount';
-    Aggregated = ({ cell: { value } }) => `${value} (Unique-Names)`;
+    Aggregated = ({ cell: { value } }) => `${value} (Unique-Emails)`;
   }
 
   return {

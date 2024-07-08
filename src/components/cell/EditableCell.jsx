@@ -10,7 +10,7 @@ const EditableCell = ({
   updateMyData,
 }) => {
   const [value, setValue] = useState(initialValue);
-  const [IsEditMode, setIsEdiMode] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
   const inputRef = useRef(null);
@@ -26,7 +26,7 @@ const EditableCell = ({
 
   const onSave = () => {
     updateMyData(index, id, value);
-    setIsEdiMode(false);
+    setIsEditMode(false);
   };
 
   const handleKeyDown = (e) => {
@@ -74,21 +74,19 @@ const EditableCell = ({
 
     case 'selection':
       return (
-        <>
-          <select
-            ref={inputRef}
-            value={value || undefined}
-            onChange={onChange}
-            onBlur={onBlur}
-            onKeyDown={handleKeyDown}
-          >
-            {options.map((option) => (
-              <option key={option} value={option}>
-                {option}
-              </option>
-            ))}
-          </select>
-        </>
+        <select
+          ref={inputRef}
+          value={value || undefined}
+          onChange={onChange}
+          onBlur={onBlur}
+          onKeyDown={handleKeyDown}
+        >
+          {options.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
       );
 
     case 'boolean':
@@ -103,44 +101,30 @@ const EditableCell = ({
 
     case 'number':
       return (
-        <>
-          <input
-            ref={inputRef}
-            type='number'
-            value={value}
-            onChange={onChange}
-            onBlur={onBlur}
-            onFocus={() => setIsEdiMode(true)}
-            onKeyDown={handleKeyDown}
-          />
-          {/* {IsEditMode && (
-            <span className={styles.saveBtn} onClick={onSave}>
-              ✓save
-            </span>
-          )} */}
-        </>
+        <input
+          ref={inputRef}
+          type='number'
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          onFocus={() => setIsEditMode(true)}
+          onKeyDown={handleKeyDown}
+        />
       );
 
     default: {
       let disabled = false;
       if (id === '_id') disabled = true;
       return (
-        <>
-          <input
-            ref={inputRef}
-            value={value}
-            onChange={onChange}
-            onBlur={onBlur}
-            onFocus={() => setIsEdiMode(true)}
-            onKeyDown={handleKeyDown}
-            disabled={disabled}
-          />
-          {/* {IsEditMode && (
-            <span className={styles.saveBtn} onClick={onSave}>
-              ✓save
-            </span>
-          )} */}
-        </>
+        <input
+          ref={inputRef}
+          value={value}
+          onChange={onChange}
+          onBlur={onBlur}
+          onFocus={() => setIsEditMode(true)}
+          onKeyDown={handleKeyDown}
+          disabled={disabled}
+        />
       );
     }
   }
