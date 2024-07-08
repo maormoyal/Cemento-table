@@ -1,5 +1,6 @@
 // src/utils/generateData.js
 import { faker } from '@faker-js/faker';
+import avatarIcon from '../assets/avatar.icon.svg';
 
 export const generateColumns = () => [
   {
@@ -85,13 +86,14 @@ export const generateData = (rowCount) => {
       firstName,
       lastName,
     });
+    const avatar = faker.image.avatar() ? faker.image.avatar() : avatarIcon;
 
     return {
       _id: faker.string.uuid(),
       firstName,
       lastName,
       email,
-      avatar: faker.image.avatar(),
+      avatar,
       birthday: new Date(faker.date.birthdate()).toDateString(),
       age: faker.number.int({ min: 18, max: 65 }),
       gender: faker.helpers.arrayElement(['female', 'male', 'other']),

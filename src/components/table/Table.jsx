@@ -1,17 +1,21 @@
-// src/components/Table.js
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   useTable,
-  useSortBy,
   useFilters,
   useGlobalFilter,
+  useGroupBy,
+  useSortBy,
   useExpanded,
   useRowSelect,
 } from 'react-table';
+import styles from './Table.module.scss';
+import groupIcon from '../../assets/table.png';
+
 import EditableCell from '../cell/EditableCell';
 import ColumnToggleDropdown from '../columnToggleDropdown/ColumnToggleDropdown';
 import { generateColumns, generateData } from '../../utils/generateData';
-import styles from './Table.module.scss';
+import useControlledState from '../../utils/useControlledState';
+import aggregationsValues from '../../utils/aggregationsValues';
 
 const Table = () => {
   const columns = useMemo(
@@ -20,15 +24,17 @@ const Table = () => {
         Header: col.title,
         accessor: col.id,
         width: col.width || 100,
+        canGroupBy: true,
         Cell: (cellProps) => (
           <EditableCell
             value={cellProps.value}
             row={cellProps.row}
-            column={{ ...cellProps.column, options: col.options || [] }} // Pass options to EditableCell
+            column={{ ...cellProps.column, options: col.options || [] }}
             updateMyData={updateMyData}
           />
         ),
-        type: col.type, // Pass the type to the column definition
+        type: col.type,
+        ...aggregationsValues(col.type, col.id),
       })),
     []
   );
@@ -45,35 +51,13 @@ const Table = () => {
     }, {})
   );
 
-  // Save data to local storage on data change
-  useEffect(() => {
-    localStorage.setItem('tableData', JSON.stringify(data));
-  }, [data]);
-
-  const updateMyData = (rowIndex, columnId, value) => {
-    setData((oldData) =>
-      oldData.map((row, index) => {
-        if (index === rowIndex) {
-          return {
-            ...row,
-            [columnId]: value,
-          };
-        }
-        return row;
-      })
-    );
-  };
-
-  const handleColumnVisibilityChange = (
-    accessor,
-    newVisibility = !columnVisibility[accessor]
-  ) => {
-    setColumnVisibility((prev) => ({
-      ...prev,
-      [accessor]: newVisibility,
-    }));
-    toggleHideColumn(accessor, !newVisibility);
-  };
+  const updateMyData = useCallback((rowIndex, columnId, value) => {
+    setData((oldData) => {
+      const newData = [...oldData];
+      newData[rowIndex][columnId] = value;
+      return newData;
+    });
+  }, []);
 
   const {
     getTableProps,
@@ -89,7 +73,7 @@ const Table = () => {
     {
       columns,
       data,
-      defaultColumn: { EditableCell },
+      defaultColumn: { Cell: EditableCell },
       updateMyData,
       initialState: {
         hiddenColumns: columns
@@ -99,14 +83,92 @@ const Table = () => {
     },
     useFilters,
     useGlobalFilter,
+    useGroupBy,
     useSortBy,
     useExpanded,
-    useRowSelect
+    useRowSelect,
+    (hooks) => {
+      hooks.useControlledState.push(useControlledState);
+      hooks.visibleColumns.push((columns, { instance }) => {
+        if (!instance.state.groupBy.length) {
+          return columns;
+        }
+
+        return [
+          {
+            id: 'expander',
+            Header: ({ allColumns, state: { groupBy } }) => {
+              return groupBy.map((columnId) => {
+                const column = allColumns.find((d) => d.id === columnId);
+                const headerProps = column.getHeaderProps();
+                return (
+                  <span key={columnId} {...headerProps}>
+                    {column.canGroupBy ? (
+                      <span {...column.getGroupByToggleProps()} title='Remove'>
+                        {column.isGrouped ? (
+                          '🛑 '
+                        ) : (
+                          <img src={groupIcon} alt='group icon' />
+                        )}
+                      </span>
+                    ) : null}
+                    {column.render('Header')}{' '}
+                  </span>
+                );
+              });
+            },
+            Cell: ({ row }) => {
+              if (row.canExpand) {
+                const groupedCell = row.allCells.find((d) => d.isGrouped);
+
+                return (
+                  <span
+                    key={row.id}
+                    {...row.getToggleRowExpandedProps({
+                      style: {
+                        paddingLeft: `${row.depth * 2}rem`,
+                      },
+                    })}
+                    className={styles.groupedCell}
+                  >
+                    {row.isExpanded ? '⬇️' : '➡️'}
+                    {groupedCell.column.type === 'boolean'
+                      ? groupedCell.value
+                        ? 'Active'
+                        : 'Inactive'
+                      : groupedCell.value}{' '}
+                    ({row.subRows.length})
+                  </span>
+                );
+              }
+
+              return null;
+            },
+          },
+          ...columns,
+        ];
+      });
+    }
   );
+
+  const handleColumnVisibilityChange = useCallback(
+    (accessor, newVisibility = !columnVisibility[accessor]) => {
+      setColumnVisibility((prev) => ({
+        ...prev,
+        [accessor]: newVisibility,
+      }));
+      toggleHideColumn(accessor, !newVisibility);
+    },
+    [columnVisibility, toggleHideColumn]
+  );
+
+  useEffect(() => {
+    localStorage.setItem('tableData', JSON.stringify(data));
+  }, [data]);
 
   return (
     <>
-      <div className={styles.searchBarWrapper}>
+      <div className={styles.pageHeader}>
         <div className={styles.searchBar}>
           <input
             value={state.globalFilter || ''}
@@ -124,27 +186,30 @@ const Table = () => {
         <table {...getTableProps()}>
           <thead>
             {headerGroups.map((headerGroup) => {
-              const { key, ...restHeaderGroupProps } =
+              const { key: headerGroupKey, ...headerGroupProps } =
                 headerGroup.getHeaderGroupProps();
               return (
-                <tr key={key} {...restHeaderGroupProps}>
+                <tr key={headerGroupKey} {...headerGroupProps}>
                   {headerGroup.headers.map((column) => {
-                    const { key: columnKey, ...restColumnProps } =
+                    const { key: headerKey, ...headerProps } =
                       column.getHeaderProps(column.getSortByToggleProps());
                     return (
-                      <th
-                        key={columnKey}
-                        {...restColumnProps}
-                        style={{ width: column.width }} // Apply width style here
-                      >
+                      <th key={headerKey} {...headerProps}>
+                        {column.canGroupBy ? (
+                          <span {...column.getGroupByToggleProps()}>
+                            {column.isGrouped ? (
+                              '🛑 '
+                            ) : (
+                              <img src={groupIcon} alt='group icon' />
+                            )}
+                          </span>
+                        ) : null}
                         {column.render('Header')}
-                        <span>
-                          {column.isSorted
-                            ? column.isSortedDesc
-                              ? ' 🔽'
-                              : ' 🔼'
-                            : ''}
-                        </span>
+                        {column.isSorted
+                          ? column.isSortedDesc
+                            ? ' 🔽'
+                            : ' 🔼'
+                          : ''}
                       </th>
                     );
                   })}
@@ -156,15 +221,36 @@ const Table = () => {
             {rows.length > 0 ? (
               rows.map((row) => {
                 prepareRow(row);
-                const { key: rowKey, ...restRowProps } = row.getRowProps();
+                const { key: rowKey, ...rowProps } = row.getRowProps();
                 return (
-                  <tr key={rowKey} {...restRowProps}>
+                  <tr key={rowKey} {...rowProps}>
                     {row.cells.map((cell) => {
-                      const { key: cellKey, ...restCellProps } =
+                      const { key: cellKey, ...cellProps } =
                         cell.getCellProps();
                       return (
-                        <td key={cellKey} {...restCellProps}>
-                          {cell.render('Cell')}
+                        <td
+                          key={cellKey}
+                          {...cellProps}
+                          className={
+                            cell.isGrouped
+                              ? styles.groupedCell
+                              : cell.isAggregated
+                              ? styles.aggregatedCell
+                              : ''
+                          }
+                        >
+                          {cell.isGrouped ? (
+                            <>
+                              <span {...row.getToggleRowExpandedProps()}>
+                                {row.isExpanded ? '⬇️' : '➡️'}{' '}
+                                {cell.render('Cell')} ({row.subRows.length})
+                              </span>
+                            </>
+                          ) : cell.isAggregated ? (
+                            cell.render('Aggregated')
+                          ) : cell.isPlaceholder ? null : (
+                            cell.render('Cell')
+                          )}
                         </td>
                       );
                     })}

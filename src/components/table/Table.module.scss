@@ -47,6 +47,34 @@ table {
     color: #fff;
   }
 
+  th img {
+    width: 20px;
+    height: auto;
+    border: none;
+    vertical-align: text-bottom;
+    margin-right: 10px;
+    filter: grayscale(1);
+  }
+
+  td.groupedCell {
+    background-color: #0aff0082;
+    color: #fff;
+    font-weight: bold;
+  }
+
+  td.aggregatedCell {
+    background-color: #1e1e1e;
+    text-align: left;
+  }
+
+  tr:has(.aggregatedCell):hover {
+    background-color: #302f2f;
+  }
+
+  td.aggregatedCell:hover {
+    background-color: #302f2f;
+  }
+
   th {
     text-align: left;
   }
@@ -58,7 +86,6 @@ table {
     }
     th {
       background-color: #ec7e18;
-      white-space: nowrap;
       text-align: center;
       cursor: pointer;
     }
@@ -80,8 +107,12 @@ table {
   }
 }
 
-.searchBarWrapper {
+.pageHeader {
   display: flex;
   justify-content: space-between;
   margin-bottom: 20px;
+}
+
+span.groupedCell {
+  display: 'flex';
 }
