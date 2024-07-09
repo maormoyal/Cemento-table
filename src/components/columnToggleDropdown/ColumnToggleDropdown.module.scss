@@ -1,0 +1,56 @@
+/* src/components/ColumnToggleDropdown.module.scss */
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+
+  button {
+    padding: 6px 10px;
+    border-radius: 5px;
+    background-color: #ec7e18;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #ed923c;
+  }
+
+  .dropdownContent {
+    display: block;
+    position: absolute;
+    background-color: rgb(0, 0, 0);
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+  }
+
+  label.dropdownItem {
+    display: block;
+    padding: 8px 16px;
+    cursor: pointer;
+    flex: 1;
+    white-space: nowrap;
+    font-size: 0.7rem;
+    border: 1px solid black;
+    padding: 5px;
+    text-align: start;
+    cursor: pointer;
+
+    &:hover {
+      background-color: #ccc;
+    }
+  }
+
+  .dropdownItem input {
+    margin-right: 8px;
+  }
+
+  input[type='checkbox' i] {
+    // display: none;
+  }
+
+  label:has(input[type='checkbox']:checked) {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+}

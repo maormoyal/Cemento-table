@@ -6,6 +6,7 @@
 }
 
 .searchBar {
+  width: 34%;
   margin-bottom: 20px;
   display: flex;
   justify-content: flex-start;
@@ -20,16 +21,18 @@
 
 table {
   width: 100%;
-  // border-collapse: collapse;
   table-layout: fixed;
 
   input {
     height: 30px;
     max-width: 90%;
-    padding: 10px;
+    padding: 0px 10px;
     width: -webkit-fill-available;
-    // border: 1px solid #ccc;
-    // border-radius: 5px;
+  }
+
+  input[type='checkbox' i] {
+    height: 20px;
+    width: 20px;
   }
 
   img {
@@ -39,9 +42,37 @@ table {
 
   th,
   td {
-    padding: 15px;
+    padding: 5px;
     background-color: rgba(255, 255, 255, 0.2);
     color: #fff;
+  }
+
+  th img {
+    width: 20px;
+    height: auto;
+    border: none;
+    vertical-align: text-bottom;
+    margin-right: 10px;
+    filter: grayscale(1);
+  }
+
+  td.groupedCell {
+    background-color: #0aff0082;
+    color: #fff;
+    font-weight: bold;
+  }
+
+  td.aggregatedCell {
+    background-color: #1e1e1e;
+    text-align: left;
+  }
+
+  tr:has(.aggregatedCell):hover {
+    background-color: #302f2f;
+  }
+
+  td.aggregatedCell:hover {
+    background-color: #302f2f;
   }
 
   th {
@@ -55,7 +86,8 @@ table {
     }
     th {
       background-color: #ec7e18;
-      white-space: nowrap;
+      text-align: center;
+      cursor: pointer;
     }
   }
 
@@ -65,61 +97,22 @@ table {
         background-color: rgba(255, 255, 255, 0.3);
       }
     }
-    // td {
-    //   position: relative;
-    //   &:hover {
-    //     &:before {
-    //       content: '';
-    //       position: absolute;
-    //       left: 0;
-    //       right: 0;
-    //       top: -9999px;
-    //       bottom: -9999px;
-    //       background-color: rgba(255, 255, 255, 0.2);
-    //       z-index: -1;
-    //     }
-    //   }
-    // }
+  }
+
+  select {
+    height: 30px;
+    max-width: 90%;
+    padding: 0px 10px;
+    width: -webkit-fill-available;
   }
 }
 
-.columnToggle {
+.pageHeader {
   display: flex;
-  gap: 10px;
   justify-content: space-between;
   margin-bottom: 20px;
-  max-width: 100%;
-  overflow: auto;
+}
 
-  button {
-    padding: 10px;
-    margin-left: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    background-color: #ec7e18;
-    color: #fff;
-    cursor: pointer;
-  }
-
-  label {
-    flex: 1;
-    white-space: nowrap;
-    font-size: 0.7rem;
-    border: 1px solid black;
-    padding: 5px;
-    text-align: center;
-    cursor: pointer;
-
-    &:hover {
-      background-color: #ccc;
-    }
-  }
-
-  input[type='checkbox' i] {
-    display: none;
-  }
-
-  label:has(input[type='checkbox']:checked) {
-    background-color: rgba(255, 255, 255, 0.3);
-  }
+span.groupedCell {
+  display: 'flex';
 }

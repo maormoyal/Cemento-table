@@ -1,12 +1,13 @@
 // src/utils/generateData.js
 import { faker } from '@faker-js/faker';
+import avatarIcon from '../assets/avatar.icon.svg';
 
 export const generateColumns = () => [
   {
     id: 'avatar',
     ordinalNo: 5,
     title: 'Avatar',
-    type: 'string',
+    type: 'image',
     width: 50,
   },
   {
@@ -37,7 +38,6 @@ export const generateColumns = () => [
     type: 'string',
     width: 200,
   },
-
   {
     id: 'birthday',
     ordinalNo: 6,
@@ -56,7 +56,8 @@ export const generateColumns = () => [
     id: 'gender',
     ordinalNo: 8,
     title: 'Gender',
-    type: 'string',
+    type: 'selection',
+    options: ['female', 'male', 'other'], // Add options for selection type
     width: 80,
   },
   {
@@ -71,34 +72,31 @@ export const generateColumns = () => [
     ordinalNo: 10,
     title: 'Role',
     type: 'selection',
+    options: ['Admin', 'User', 'Guest'],
     width: 80,
   },
 ];
 
 export const generateData = (rowCount) => {
   return Array.from({ length: rowCount }, () => {
-    const gender = faker.person.sexType();
-    const firstName = faker.person.firstName(gender);
+    const genderType = faker.person.sexType();
+    const firstName = faker.person.firstName(genderType);
     const lastName = faker.person.lastName();
     const email = faker.internet.email({
       firstName,
       lastName,
     });
+    const avatar = faker.image.avatar() ? faker.image.avatar() : avatarIcon;
 
     return {
       _id: faker.string.uuid(),
       firstName,
       lastName,
       email,
-      avatar: faker.image.avatar(),
+      avatar,
       birthday: new Date(faker.date.birthdate()).toDateString(),
       age: faker.number.int({ min: 18, max: 65 }),
-      gender,
-      subscriptionTier: faker.helpers.arrayElement([
-        'free',
-        'basic',
-        'business',
-      ]),
+      gender: faker.helpers.arrayElement(['female', 'male', 'other']),
       status: faker.datatype.boolean(),
       role: faker.helpers.arrayElement(['Admin', 'User', 'Guest']),
     };
