@@ -1,5 +1,5 @@
 .tableWrapper {
-  overflow: auto;
+  overflow-y: hidden;
   max-width: 100%;
   max-height: 70dvh;
   min-height: 70dvh;
@@ -23,12 +23,19 @@ table {
   width: 100%;
   table-layout: fixed;
 
-  input {
+  input,
+  select {
     height: 30px;
     max-width: 90%;
     padding: 0px 10px;
-    width: -webkit-fill-available;
+    width: 60%;
   }
+  // select {
+  //   height: 33px;
+  //   max-width: 90%;
+  //   padding: 0px 10px;
+  //   width: 60%;
+  // }
 
   input[type='checkbox' i] {
     height: 20px;
@@ -38,6 +45,7 @@ table {
   img {
     height: 30px;
     border: 1px solid #ccc;
+    vertical-align: middle;
   }
 
   th,
@@ -80,10 +88,14 @@ table {
   }
 
   thead {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+
     tr {
-      position: sticky;
-      top: 0;
+      display: block;
     }
+
     th {
       background-color: #ec7e18;
       text-align: center;
@@ -97,13 +109,6 @@ table {
         background-color: rgba(255, 255, 255, 0.3);
       }
     }
-  }
-
-  select {
-    height: 30px;
-    max-width: 90%;
-    padding: 0px 10px;
-    width: -webkit-fill-available;
   }
 }
 
