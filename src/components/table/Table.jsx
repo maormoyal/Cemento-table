@@ -1,10 +1,4 @@
-import React, {
-  useState,
-  useEffect,
-  useMemo,
-  useCallback,
-  useRef,
-} from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import {
   useTable,
   useFilters,
@@ -14,9 +8,9 @@ import {
   useExpanded,
   useRowSelect,
 } from 'react-table';
-import { FixedSizeList } from 'react-window';
 import styles from './Table.module.scss';
 import groupIcon from '../../assets/table.png';
+import PropTypes from 'prop-types';
 
 import EditableCell from '../cell/EditableCell';
 import ColumnToggleDropdown from '../columnToggleDropdown/ColumnToggleDropdown';
@@ -30,7 +24,7 @@ const Table = () => {
       generateColumns().map((col) => ({
         Header: col.title,
         accessor: col.id,
-        width: col.width,
+        width: col.width || 100,
         canGroupBy: true,
         Cell: (cellProps) => (
           <EditableCell
@@ -76,7 +70,6 @@ const Table = () => {
     setGlobalFilter,
     allColumns,
     toggleHideColumn,
-    totalColumnsWidth,
   } = useTable(
     {
       columns,
@@ -174,59 +167,6 @@ const Table = () => {
     localStorage.setItem('tableData', JSON.stringify(data));
   }, [data]);
 
-  const tableRef = useRef();
-  const [headerWidths, setHeaderWidths] = useState([]);
-
-  useEffect(() => {
-    const widths = Array.from(
-      tableRef.current.querySelectorAll('thead th')
-    ).map((th) => th.offsetWidth);
-    setHeaderWidths(widths);
-  }, []);
-
-  const RenderRow = useCallback(
-    ({ index, style }) => {
-      const row = rows[index];
-      prepareRow(row);
-      const { key: rowKey, ...rowProps } = row.getRowProps({ style });
-      return (
-        <tr key={rowKey} {...rowProps}>
-          {row.cells.map((cell, cellIndex) => {
-            const { key: cellKey, ...cellProps } = cell.getCellProps();
-            return (
-              <td
-                key={cellKey}
-                {...cellProps}
-                style={{ ...cellProps.style, width: headerWidths[cellIndex] }}
-                className={
-                  cell.isGrouped
-                    ? styles.groupedCell
-                    : cell.isAggregated
-                    ? styles.aggregatedCell
-                    : ''
-                }
-              >
-                {cell.isGrouped ? (
-                  <>
-                    <span {...row.getToggleRowExpandedProps()}>
-                      {row.isExpanded ? '⬇️' : '➡️'} {cell.render('Cell')} (
-                      {row.subRows.length})
-                    </span>
-                  </>
-                ) : cell.isAggregated ? (
-                  cell.render('Aggregated')
-                ) : cell.isPlaceholder ? null : (
-                  cell.render('Cell')
-                )}
-              </td>
-            );
-          })}
-        </tr>
-      );
-    },
-    [prepareRow, rows, headerWidths]
-  );
-
   return (
     <>
       <div className={styles.pageHeader}>
@@ -244,7 +184,7 @@ const Table = () => {
         />
       </div>
       <div className={styles.tableWrapper}>
-        <table {...getTableProps()} ref={tableRef}>
+        <table {...getTableProps()}>
           <thead>
             {headerGroups.map((headerGroup) => {
               const { key: headerGroupKey, ...headerGroupProps } =
@@ -280,15 +220,44 @@ const Table = () => {
           </thead>
           <tbody {...getTableBodyProps()}>
             {rows.length > 0 ? (
-              <FixedSizeList
-                height={500}
-                itemCount={rows.length}
-                itemSize={80}
-                width={totalColumnsWidth + 290}
-                innerElementType='tbody'
-              >
-                {RenderRow}
-              </FixedSizeList>
+              rows.map((row) => {
+                prepareRow(row);
+                const { key: rowKey, ...rowProps } = row.getRowProps();
+                return (
+                  <tr key={rowKey} {...rowProps}>
+                    {row.cells.map((cell) => {
+                      const { key: cellKey, ...cellProps } =
+                        cell.getCellProps();
+                      return (
+                        <td
+                          key={cellKey}
+                          {...cellProps}
+                          className={
+                            cell.isGrouped
+                              ? styles.groupedCell
+                              : cell.isAggregated
+                              ? styles.aggregatedCell
+                              : ''
+                          }
+                        >
+                          {cell.isGrouped ? (
+                            <>
+                              <span {...row.getToggleRowExpandedProps()}>
+                                {row.isExpanded ? '⬇️' : '➡️'}{' '}
+                                {cell.render('Cell')} ({row.subRows.length})
+                              </span>
+                            </>
+                          ) : cell.isAggregated ? (
+                            cell.render('Aggregated')
+                          ) : cell.isPlaceholder ? null : (
+                            cell.render('Cell')
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td colSpan={columns.length} style={{ textAlign: 'center' }}>
@@ -301,6 +270,18 @@ const Table = () => {
       </div>
     </>
   );
+};
+
+Table.propTypes = {
+  row: PropTypes.shape({
+    id: PropTypes.string,
+    isExpanded: PropTypes.bool,
+    allCells: PropTypes.array,
+    getToggleRowExpandedProps: PropTypes.func,
+    canExpand: PropTypes.bool,
+    depth: PropTypes.number,
+    subRows: PropTypes.array,
+  }),
 };
 
 export default Table;
